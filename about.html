@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Me | Anik Maharjan</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — Anik Maharjan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <!-- Animate on Scroll Library -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="index.html">Anik Maharjan</a>
+      <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html" class="active">About</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -19,33 +19,18 @@
     </nav>
   </header>
 
-  <section class="content">
-    <h2 data-aos="fade-down">About Me 🙋</h2>
+  <main>
+    <section class="content reveal">
+      <h2>About Me 🙋</h2>
+      <p>Hi — I'm <strong>Anik Maharjan</strong> from Kathmandu, Nepal. I currently work at <em>Handmade Handicraft</em>, handling parcel prep and tracking numbers. I want to study abroad and build a business someday. This site is my practice project while I learn web dev.</p>
+      <img src="avatar-placeholder.png" alt="Anik Maharjan" class="avatar">
+    </section>
+  </main>
 
-    <p data-aos="fade-up" data-aos-delay="200">
-      Hi, I’m <strong>Anik Maharjan</strong>.  
-      I grew up in <b>Lalitpur, Nepal</b>, and currently, I am pursuing my dreams in <b>South Korea</b>.  
-    </p>
+  <footer class="site-footer">
+    <p>© <span id="year2"></span> Anik Maharjan</p>
+  </footer>
 
-    <p data-aos="fade-up" data-aos-delay="400">
-      I’m studying for my <b>Bachelor’s degree</b> in <b>Integrated Business Management (IBM)</b> at <b>Dong-A University, Busan</b>.  
-      This program is helping me understand how global businesses work and preparing me to become an entrepreneur and leader in the future. 🚀  
-    </p>
-
-    <p data-aos="fade-up" data-aos-delay="600">
-      Besides academics, I enjoy <b>playing guitar 🎸</b>, exploring new cultures, and meeting new people.  
-      Music inspires me, and I believe creativity plays a big role in business and life.  
-    </p>
-
-    <p data-aos="fade-up" data-aos-delay="800">
-      My long-term goal is to combine my skills, education, and passion to build businesses that connect people across borders and make a positive impact. 🌍  
-    </p>
-  </section>
-
-  <!-- Animate on Scroll Script -->
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    AOS.init();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
