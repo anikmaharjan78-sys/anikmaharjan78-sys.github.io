@@ -2,15 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact | Anik Maharjan</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <header>
-    <nav class="nav">
-      <a class="logo" href="index.html">Anik</a>
+    <nav>
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
@@ -19,33 +18,30 @@
     </nav>
   </header>
 
-  <section class="content">
-    <h2>Get in Touch 📩</h2>
-    <p>If you’d like to connect with me, feel free to drop a message below or reach out through social media.</p>
+  <section class="content contact">
+    <h2>📩 Get in Touch</h2>
+    <p>If you’d like to connect with me, feel free to use the form below or reach me through my social links.</p>
 
     <div class="contact-container">
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <p><i class="fas fa-envelope"></i> anikmaharjan@email.com</p>
+        <p><i class="fas fa-phone"></i> +977 9800000000</p>
+        <p><i class="fas fa-location-dot"></i> Busan, South Korea</p>
+      </div>
+
       <!-- Contact Form -->
       <form class="contact-form">
         <input type="text" placeholder="Your Name" required>
         <input type="email" placeholder="Your Email" required>
-        <textarea placeholder="Your Message" rows="5" required></textarea>
+        <textarea rows="5" placeholder="Your Message" required></textarea>
         <button type="submit">Send Message</button>
       </form>
-
-      <!-- Contact Info -->
-      <div class="contact-info">
-        <p><i class="fas fa-envelope"></i> anik@example.com</p>
-        <p><i class="fas fa-phone"></i> +977-9800000000</p>
-        <p><i class="fas fa-map-marker-alt"></i> Busan, South Korea</p>
-
-        <div class="social-links">
-          <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-          <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-          <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
-          <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
-        </div>
-      </div>
     </div>
   </section>
+
+  <footer>
+    <p>© Anik Maharjan</p>
+  </footer>
 </body>
 </html>
