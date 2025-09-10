@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Contact — Anik Maharjan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact | Anik Maharjan</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <header class="site-header">
+  <header>
     <nav class="nav">
-      <a class="logo" href="index.html">Anik Maharjan</a>
-      <ul class="nav-links">
+      <a class="logo" href="index.html">Anik</a>
+      <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
         <li><a href="contact.html" class="active">Contact</a></li>
@@ -19,19 +19,33 @@
     </nav>
   </header>
 
-  <main>
-    <section class="content reveal">
-      <h2>Contact Me 📩</h2>
-      <p>Email: <a href="mailto:anik@example.com">anik@example.com</a></p>
-      <p>GitHub: <a href="https://github.com/anikmaharjan78-sys">@anikmaharjan78-sys</a></p>
-      <p>LinkedIn: <a href="#">linkedin.com/in/anikmaharjan</a></p>
-    </section>
-  </main>
+  <section class="content">
+    <h2>Get in Touch 📩</h2>
+    <p>If you’d like to connect with me, feel free to drop a message below or reach out through social media.</p>
 
-  <footer class="site-footer">
-    <p>© <span id="year3"></span> Anik Maharjan</p>
-  </footer>
+    <div class="contact-container">
+      <!-- Contact Form -->
+      <form class="contact-form">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" rows="5" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
 
-  <script src="script.js"></script>
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <p><i class="fas fa-envelope"></i> anik@example.com</p>
+        <p><i class="fas fa-phone"></i> +977-9800000000</p>
+        <p><i class="fas fa-map-marker-alt"></i> Busan, South Korea</p>
+
+        <div class="social-links">
+          <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+          <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
 </html>
