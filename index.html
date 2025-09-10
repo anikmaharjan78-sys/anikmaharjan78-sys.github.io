@@ -1,16 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Anik Maharjan | Home</title>
+
+  <!-- Fonts & icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="index.html">Anik Maharjan</a>
+      <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
         <li><a href="about.html">About</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -18,10 +24,37 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <h1>Hello, I’m <span class="highlight">Anik Maharjan</span> 👋</h1>
-    <p>Aspiring Entrepreneur | Web Developer in Training 🚀</p>
-    <a href="about.html" class="btn">Know More</a>
-  </section>
+  <main>
+    <section class="hero reveal">
+      <div class="hero-inner">
+        <h1>Hello — I'm <span class="name">Anik Maharjan</span> 👋</h1>
+        <p class="subtitle">Aspiring entrepreneur • Learning web development • From Kathmandu, Nepal</p>
+        <div class="hero-cta">
+          <a class="btn" href="about.html">About me</a>
+          <a class="btn ghost" href="contact.html">Contact</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="info reveal" data-delay="100">
+      <div class="card">
+        <h3>What I'm learning</h3>
+        <p>HTML, CSS, JavaScript, and building small projects for practice. I also run day-to-day tasks at Handmade Handicraft (parcels & tracking).</p>
+      </div>
+    </section>
+
+    <section class="projects reveal" data-delay="200">
+      <div class="card">
+        <h3>Future Projects</h3>
+        <p>Portfolio, small e-commerce mockup, and a blog about building a business — coming soon.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Anik Maharjan — Built with ❤️</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
