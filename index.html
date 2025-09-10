@@ -3,44 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home - My Website</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      color: white;
-      text-align: center;
-    }
-    header {
-      background: rgba(0, 0, 0, 0.4);
-      padding: 15px;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    .content {
-      padding: 50px 20px;
-    }
-  </style>
+  <title>Anik Maharjan | Home</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </nav>
   </header>
-  <div class="content">
-    <h1>Welcome 🌍</h1>
-    <p>This is my first multi-page website on GitHub Pages 🚀</p>
-  </div>
+
+  <section class="hero">
+    <h1>Hello, I’m <span class="highlight">Anik Maharjan</span> 👋</h1>
+    <p>Aspiring Entrepreneur | Web Developer in Training 🚀</p>
+    <a href="about.html" class="btn">Know More</a>
+  </section>
 </body>
 </html>
