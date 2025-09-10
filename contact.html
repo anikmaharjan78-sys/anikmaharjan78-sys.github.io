@@ -1,15 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact | Anik Maharjan</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — Anik Maharjan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="index.html">Anik Maharjan</a>
+      <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
         <li><a href="contact.html" class="active">Contact</a></li>
@@ -17,11 +19,19 @@
     </nav>
   </header>
 
-  <section class="content">
-    <h2>Contact Me 📩</h2>
-    <p>Email: <a href="mailto:anik@example.com">anik@example.com</a></p>
-    <p>GitHub: <a href="https://github.com/anikmaharjan78-sys">@anikmaharjan78-sys</a></p>
-    <p>LinkedIn: <a href="#">linkedin.com/in/anikmaharjan</a></p>
-  </section>
+  <main>
+    <section class="content reveal">
+      <h2>Contact Me 📩</h2>
+      <p>Email: <a href="mailto:anik@example.com">anik@example.com</a></p>
+      <p>GitHub: <a href="https://github.com/anikmaharjan78-sys">@anikmaharjan78-sys</a></p>
+      <p>LinkedIn: <a href="#">linkedin.com/in/anikmaharjan</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year3"></span> Anik Maharjan</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
