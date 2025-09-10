@@ -3,45 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About - My Website</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #ff7e5f, #feb47b);
-      color: white;
-      text-align: center;
-    }
-    header {
-      background: rgba(0, 0, 0, 0.4);
-      padding: 15px;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    .content {
-      padding: 50px 20px;
-    }
-  </style>
+  <title>About Me | Anik Maharjan</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Animate on Scroll Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
   <header>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
     </nav>
   </header>
-  <div class="content">
-    <h1>About Me 🙋‍♂️</h1>
-    <p>Hello! I’m learning how to build websites using GitHub Pages.  
-    This site is part of my practice project.</p>
-  </div>
+
+  <section class="content">
+    <h2 data-aos="fade-down">About Me 🙋</h2>
+
+    <p data-aos="fade-up" data-aos-delay="200">
+      Hi, I’m <strong>Anik Maharjan</strong>.  
+      I grew up in <b>Lalitpur, Nepal</b>, and currently, I am pursuing my dreams in <b>South Korea</b>.  
+    </p>
+
+    <p data-aos="fade-up" data-aos-delay="400">
+      I’m studying for my <b>Bachelor’s degree</b> in <b>Integrated Business Management (IBM)</b> at <b>Dong-A University, Busan</b>.  
+      This program is helping me understand how global businesses work and preparing me to become an entrepreneur and leader in the future. 🚀  
+    </p>
+
+    <p data-aos="fade-up" data-aos-delay="600">
+      Besides academics, I enjoy <b>playing guitar 🎸</b>, exploring new cultures, and meeting new people.  
+      Music inspires me, and I believe creativity plays a big role in business and life.  
+    </p>
+
+    <p data-aos="fade-up" data-aos-delay="800">
+      My long-term goal is to combine my skills, education, and passion to build businesses that connect people across borders and make a positive impact. 🌍  
+    </p>
+  </section>
+
+  <!-- Animate on Scroll Script -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
 </body>
 </html>
