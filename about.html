@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Me | Anik Maharjan</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 </head>
-  <!-- AOS Animation Library -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <body>
 
   <!-- NAVBAR -->
@@ -21,34 +20,16 @@
   </nav>
 
   <!-- ABOUT SECTION -->
-  <section class="about">
-    <h2>🌍 My Journey</h2>
-    <p>📍 <b>Lalitpur, Nepal</b><br>
-       Born and raised in Lalitpur. Dreaming big since my school days.</p>
-
-    <p>🎓 <b>Dong-A University, Busan</b><br>
-       Currently studying Bachelor in <b>Integrated Business Management (IBM)</b> in Korea.</p>
-
-    <p>🎸 <b>Hobbies</b><br>
-       Love playing guitar, exploring new cultures, and reading business books.</p>
-
-    <p>🚀 <b>Future Vision</b><br>
-       To build global businesses that connect people and inspire change.</p>
+  <section class="about" data-aos="fade-up">
+    <h2 data-aos="flip-up">🌍 My Journey</h2>
+    <p data-aos="fade-right">📍 <b>Lalitpur, Nepal</b><br>Born and raised in Lalitpur. Dreaming big since my school days.</p>
+    <p data-aos="fade-left">🎓 <b>Dong-A University, Busan</b><br>Currently studying Bachelor in <b>Integrated Business Management (IBM)</b> in Korea.</p>
+    <p data-aos="fade-right">🎸 <b>Hobbies</b><br>Love playing guitar, exploring new cultures, and reading business books.</p>
+    <p data-aos="fade-left">🚀 <b>Future Vision</b><br>To build global businesses that connect people and inspire change.</p>
   </section>
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({
-    duration: 1000,   // animation speed
-    once: true        // run animation only once
-  });
-</script>
 
+  <!-- AOS Init -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init({ duration: 1000, once: true });</script>
 </body>
 </html>
-<section class="about" data-aos="fade-up">
-  <h2 data-aos="flip-up">🌍 My Journey</h2>
-  <p data-aos="fade-right">📍 <b>Lalitpur, Nepal</b><br>Born and raised in Lalitpur. Dreaming big since my school days.</p>
-  <p data-aos="fade-left">🎓 <b>Dong-A University, Busan</b><br>Currently studying Bachelor in <b>Integrated Business Management (IBM)</b> in Korea.</p>
-  <p data-aos="fade-right">🎸 <b>Hobbies</b><br>Love playing guitar, exploring new cultures, and reading business books.</p>
-  <p data-aos="fade-left">🚀 <b>Future Vision</b><br>To build global businesses that connect people and inspire change.</p>
-</section>
