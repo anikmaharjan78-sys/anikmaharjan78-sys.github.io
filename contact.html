@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact | Anik Maharjan</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 </head>
-  <!-- AOS Animation Library -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <body>
 
   <!-- NAVBAR -->
@@ -21,48 +20,27 @@
   </nav>
 
   <!-- CONTACT SECTION -->
-  <section class="contact">
-    <h2>📧 Get in Touch</h2>
-    <p>If you’d like to connect with me, feel free to use the form below or reach me through my details.</p>
+  <section class="contact" data-aos="fade-up">
+    <h2 data-aos="zoom-in">📧 Get in Touch</h2>
+    <p data-aos="fade-right">If you’d like to connect with me, feel free to use the form below or reach me through my details.</p>
 
-    <div class="contact-info">
+    <div class="contact-info" data-aos="fade-left">
       <p>📧 anikmaharjan@email.com</p>
       <p>📞 +977 9800000000</p>
       <p>📍 Busan, South Korea</p>
     </div>
 
     <!-- CONTACT FORM -->
-    <form>
+    <form data-aos="fade-up">
       <input type="text" placeholder="Your Name" required>
       <input type="email" placeholder="Your Email" required>
       <textarea rows="5" placeholder="Your Message" required></textarea>
       <button type="submit">Send Message</button>
     </form>
   </section>
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({
-    duration: 1000,   // animation speed
-    once: true        // run animation only once
-  });
-</script>
 
+  <!-- AOS Init -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init({ duration: 1000, once: true });</script>
 </body>
 </html>
-<section class="contact" data-aos="fade-up">
-  <h2 data-aos="zoom-in">📧 Get in Touch</h2>
-  <p data-aos="fade-right">If you’d like to connect with me, feel free to use the form below or reach me through my details.</p>
-
-  <div class="contact-info" data-aos="fade-left">
-    <p>📧 anikmaharjan@email.com</p>
-    <p>📞 +977 9800000000</p>
-    <p>📍 Busan, South Korea</p>
-  </div>
-
-  <form data-aos="fade-up">
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea rows="5" placeholder="Your Message" required></textarea>
-    <button type="submit">Send Message</button>
-  </form>
-</section>
