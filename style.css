@@ -183,3 +183,21 @@ form button:hover {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* === TYPED TEXT === */
+#typed-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffcc00;
+  text-shadow: 0 0 10px rgba(255, 204, 0, 0.7),
+               0 0 20px rgba(255, 204, 0, 0.5);
+  border-right: 2px solid #fff; /* blinking cursor */
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { border-color: #fff; }
+  51%, 100% { border-color: transparent; }
+}
