@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Typed.js -->
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anik Maharjan | Portfolio</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Font Awesome (icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- AOS (Animate on Scroll) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 </head>
-  <!-- AOS Animation Library -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <body>
 
   <!-- NAVBAR -->
@@ -24,35 +28,46 @@
   </nav>
 
   <!-- HERO SECTION -->
-  <section class="hero">
-    <img src="profile.jpg" alt="Anik Maharjan" class="profile-pic">
+  <section class="hero" data-aos="fade-up">
+    <img src="profile.jpg" alt="Anik Maharjan" class="profile-pic" data-aos="zoom-in">
+
     <h1>Hello 👋, I’m <span style="color:#ffcc00;">Anik Maharjan</span></h1>
-    <p>Student at Dong-A University • Business Dreamer • Guitar Lover 🎸</p>
+    <p><span id="typed-text"></span></p>
 
     <!-- Social Links -->
-    <div class="social-links">
+    <div class="social-links" data-aos="zoom-in-up">
       <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
       <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
       <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
     </div>
-  </section>
-  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({
-    duration: 1000,   // animation speed
-    once: true        // run animation only once
-  });
-</script>
 
+    <!-- Scroll Down Arrow -->
+    <div class="scroll-down" data-aos="fade-up">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- AOS + Typed.js Init -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+
+    // Typed.js
+    var typed = new Typed("#typed-text", {
+      strings: [
+        "<span style='color:#ffcc00;'>Student at Dong-A University 🎓</span>",
+        "<span style='color:#00e6e6;'>Dreamer of Global Business 🚀</span>",
+        "<span style='color:#ff66b2;'>Music & Guitar Lover 🎸</span>",
+        "<span style='color:#99ff33;'>Always Learning 📚</span>"
+      ],
+      typeSpeed: 60,
+      backSpeed: 40,
+      backDelay: 1500,
+      loop: true
+    });
+  </script>
 </body>
 </html>
-<section class="hero" data-aos="fade-up">
-  <img src="profile.jpg" alt="Anik Maharjan" class="profile-pic" data-aos="zoom-in">
-  <h1 data-aos="fade-right">Hello 👋, I’m <span style="color:#ffcc00;">Anik Maharjan</span></h1>
-  <p data-aos="fade-left">Student at Dong-A University • Business Dreamer • Guitar Lover 🎸</p>
-  <div class="social-links" data-aos="zoom-in-up">
-    <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-    <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
-  </div>
-</section>
