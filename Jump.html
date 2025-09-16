@@ -6,28 +6,41 @@
   <style>
     body { margin: 0; background: #87ceeb; overflow: hidden; }
     canvas { background: #cfe9ff; display: block; margin: 0 auto; border: 3px solid #333; }
+    #overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); color: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-family: Arial, sans-serif;
+    }
+    #overlay h1 { margin-bottom: 20px; }
+    #overlay p { margin: 5px 0; }
   </style>
 </head>
 <body>
+<div id="overlay">
+  <h1>Welcome to the Jumping Game!</h1>
+  <p>➡️ Use <b>Arrow Keys</b> or <b>A / D</b> to move</p>
+  <p>⤴️ Use <b>Space / W / Up Arrow</b> to jump</p>
+  <p>💀 Avoid red spikes</p>
+  <p>🏁 Reach the yellow finish line to win</p>
+  <p>🔄 Press <b>R</b> to restart</p>
+  <button onclick="startGame()">Start Game</button>
+</div>
 <canvas id="game" width="800" height="400"></canvas>
+
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
 
 // game variables
-let player, platforms, obstacles, finish, cameraX, keys = {};
-let gameState = "start"; // "start", "playing", "win", "lose"
-let score = 0;
-
+let player, platforms, obstacles, finish, cameraX, keys = {}, gameOver=false, gameWin=false;
 const gravity = 0.8, jumpPower = -12, speed = 4, levelWidth = 3000;
 
 function resetGame() {
   player = { x: 50, y: H-100, w: 40, h: 40, vx: 0, vy: 0, onGround: false, jumping: false };
   cameraX = 0;
-  keys = {};
-  score = 0;
-  gameState = "start"; // show instructions first
+  gameOver = false;
+  gameWin = false;
 
   platforms = [
     {x:0, y:H-60, w:levelWidth, h:60}, // ground
@@ -49,7 +62,7 @@ function resetGame() {
 function rect(r, color) { ctx.fillStyle = color; ctx.fillRect(r.x - cameraX, r.y, r.w, r.h); }
 
 function update() {
-  if(gameState !== "playing") return; // only update in playing state
+  if(gameOver || gameWin) return;
 
   // move
   if(keys["ArrowRight"] || keys["d"]) player.vx = speed;
@@ -80,74 +93,35 @@ function update() {
     }
   }
 
-  // lose if hit spikes
+  // spikes
   for(let s of obstacles) {
     if(player.x < s.x+s.w && player.x+player.w > s.x && player.y < s.y+s.h && player.y+player.h > s.y) {
-      gameState = "lose";
+      gameOver = true;
     }
   }
 
-  // lose if fall off screen
-  if(player.y > H) {
-    gameState = "lose";
-  }
-
-  // win if reach finish
+  // finish line
   if(player.x+player.w > finish.x && player.y+player.h > finish.y) {
-    gameState = "win";
+    gameWin = true;
   }
 
   // camera
   cameraX = player.x - W/2;
   if(cameraX < 0) cameraX = 0;
   if(cameraX > levelWidth-W) cameraX = levelWidth-W;
-
-  // score = distance traveled
-  score = Math.max(score, Math.floor(player.x));
 }
 
 function draw() {
   ctx.clearRect(0,0,W,H);
-
-  // draw level
   for(let p of platforms) rect(p, "#228B22");
   for(let s of obstacles) rect(s, "#b00");
   rect(finish, "#ff0");
   rect(player, "#33c");
 
-  // HUD
-  ctx.fillStyle = "#000";
-  ctx.font = "18px Arial";
-  if(gameState === "playing") ctx.fillText("Score: " + score + " px", 20, 30);
-
-  // messages
-  if(gameState === "start") {
-    ctx.fillStyle = "black";
-    ctx.font = "28px Arial";
-    ctx.fillText("Welcome to the Jumping Game!", W/2-200, H/2-40);
-    ctx.font = "20px Arial";
-    ctx.fillText("Controls: Arrow keys / A D to move, Space/W/↑ to jump", W/2-250, H/2);
-    ctx.fillText("Avoid spikes, reach the yellow finish line!", W/2-200, H/2+30);
-    ctx.fillText("Press ENTER to Start", W/2-120, H/2+80);
-  }
-
-  if(gameState === "win") {
-    ctx.fillStyle = "green";
-    ctx.font = "40px Arial";
-    ctx.fillText("YOU WIN!", W/2-100, H/2-20);
-    ctx.font = "20px Arial";
-    ctx.fillText("Final Score: " + score + " px", W/2-80, H/2+20);
-    ctx.fillText("Press R to Restart", W/2-90, H/2+60);
-  }
-
-  if(gameState === "lose") {
-    ctx.fillStyle = "red";
-    ctx.font = "40px Arial";
-    ctx.fillText("YOU LOSE!", W/2-110, H/2-20);
-    ctx.font = "20px Arial";
-    ctx.fillText("Final Score: " + score + " px", W/2-80, H/2+20);
-    ctx.fillText("Press R to Restart", W/2-90, H/2+60);
-  }
+  ctx.fillStyle = "black";
+  ctx.font = "20px Arial";
+  if(gameOver) ctx.fillText("You Lost! Press R to restart", W/2-120, H/2);
+  if(gameWin) ctx.fillText("You Win! Press R to restart", W/2-120, H/2);
 }
 
 function loop() {
@@ -157,18 +131,21 @@ function loop() {
 }
 
 // keys
-document.addEventListener("keydown", e => {
-  keys[e.key] = true;
-  if(gameState === "start" && e.key === "Enter") gameState = "playing";
-});
+document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => {
   keys[e.key] = false;
   if (e.key === "r" || e.key === "R") resetGame();
 });
 
-// start
-resetGame();
-loop();
+// start game button
+function startGame() {
+  document.getElementById("overlay").style.display = "none";
+  resetGame();
+  loop();
+
+  // Open external link once when game starts
+  window.open("https://chatgpt.com/share/68c90a3f-3138-8012-b611-792724a6dc4a", "_blank");
+}
 </script>
 </body>
 </html>
