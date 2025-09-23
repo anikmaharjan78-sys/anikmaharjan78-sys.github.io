@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adventure Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #87CEEB;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      display: none;
+      background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+    }
+    #menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+    }
+    button {
+      margin: 10px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+    #controls {
+      display: none;
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      cursor: pointer;
+    }
+    #instructions {
+      max-width: 600px;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Menu -->
+  <div id="menu">
+    <h1>🌟 Adventure Game 🌟</h1>
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="window.open('https://chatgpt.com/share/68d22f1a-44cc-8012-b812-1b2102a20a2e','_blank')">AI Chat History</button>
+    <div id="instructions">
+      <h3>📜 How to Play</h3>
+      <ul>
+        <li>➡ Move Right: Right Arrow / Tap ➡</li>
+        <li>⬅ Move Left: Left Arrow / Tap ⬅</li>
+        <li>⤒ Jump: Up Arrow / Space / Tap ⤒</li>
+        <li>⟳ Restart: R / Tap ⟳</li>
+        <li>Avoid spikes ⚠ and jump over holes ⬜</li>
+        <li>Reach the end to win 🎉</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Mobile Controls -->
+  <div id="controls">
+    <div class="btn" id="left">⬅</div>
+    <div class="btn" id="jump">⤒</div>
+    <div class="btn" id="right">➡</div>
+    <div class="btn" id="restart">⟳</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let gameRunning = false;
+
+    // Player
+    const player = {
+      x: 50,
+      y: canvas.height - 140,
+      width: 40,
+      height: 40,
+      color: "red",
+      dy: 0,
+      gravity: 0.6,
+      jumpPower: -12,
+      grounded: false,
+      speed: 5
+    };
+
+    // Ground
+    const groundHeight = 100;
+    const ground = [{ x: 0, y: canvas.height - groundHeight, width: 3000, height: groundHeight }];
+
+    // Obstacles
+    const spikes = [
+      { x: 400, y: canvas.height - groundHeight - 20, width: 40, height: 20 },
+      { x: 900, y: canvas.height - groundHeight - 20, width: 40, height: 20 },
+      { x: 1600, y: canvas.height - groundHeight - 20, width: 40, height: 20 }
+    ];
+
+    const holes = [
+      { x: 700, width: 100 },
+      { x: 1300, width: 120 },
+      { x: 2000, width: 150 }
+    ];
+
+    // Goal (win zone)
+    const goal = { x: 2800, y: canvas.height - groundHeight - 50, width: 40, height: 50 };
+
+    let cameraX = 0;
+    let keys = {};
+
+    // Restart
+    function restartGame() {
+      player.x = 50;
+      player.y = canvas.height - 140;
+      player.dy = 0;
+      cameraX = 0;
+    }
+
+    // PC controls
+    window.addEventListener("keydown", e => keys[e.key] = true);
+    window.addEventListener("keyup", e => keys[e.key] = false);
+
+    // Mobile controls
+    document.getElementById("left").addEventListener("touchstart", () => keys["ArrowLeft"] = true);
+    document.getElementById("left").addEventListener("touchend", () => keys["ArrowLeft"] = false);
+    document.getElementById("right").addEventListener("touchstart", () => keys["ArrowRight"] = true);
+    document.getElementById("right").addEventListener("touchend", () => keys["ArrowRight"] = false);
+    document.getElementById("jump").addEventListener("touchstart", () => {
+      if (player.grounded) {
+        player.dy = player.jumpPower;
+        player.grounded = false;
+      }
+    });
+    document.getElementById("restart").addEventListener("touchstart", restartGame);
+
+    // Drawing
+    function drawPlayer() {
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
+    }
+
+    function drawGround() {
+      ctx.fillStyle = "green";
+      ground.forEach(g => ctx.fillRect(g.x - cameraX, g.y, g.width, g.height));
+    }
+
+    function drawSpikes() {
+      ctx.fillStyle = "black";
+      spikes.forEach(s => {
+        ctx.beginPath();
+        ctx.moveTo(s.x - cameraX, s.y + s.height);
+        ctx.lineTo(s.x + s.width/2 - cameraX, s.y);
+        ctx.lineTo(s.x + s.width - cameraX, s.y + s.height);
+        ctx.closePath();
+        ctx.fill();
+      });
+    }
+
+    function drawHoles() {
+      ctx.fillStyle = "#87CEEB";
+      holes.forEach(h => ctx.fillRect(h.x - cameraX, canvas.height - groundHeight, h.width, groundHeight));
+    }
+
+    function drawGoal() {
+      ctx.fillStyle = "gold";
+      ctx.fillRect(goal.x - cameraX, goal.y, goal.width, goal.height);
+    }
+
+    function updatePlayer() {
+      if (keys["ArrowLeft"]) player.x -= player.speed;
+      if (keys["ArrowRight"]) player.x += player.speed;
+      if ((keys[" "] || keys["ArrowUp"]) && player.grounded) {
+        player.dy = player.jumpPower;
+        player.grounded = false;
+      }
+
+      player.dy += player.gravity;
+      player.y += player.dy;
+
+      // Ground + holes
+      player.grounded = false;
+      let onGround = true;
+      for (let h of holes) {
+        if (player.x + player.width > h.x && player.x < h.x + h.width) {
+          onGround = false;
+        }
+      }
+      if (onGround && player.y + player.height > canvas.height - groundHeight) {
+        player.y = canvas.height - groundHeight - player.height;
+        player.dy = 0;
+        player.grounded = true;
+      }
+
+      // Spikes
+      for (let s of spikes) {
+        if (player.x < s.x + s.width &&
+            player.x + player.width > s.x &&
+            player.y < s.y + s.height &&
+            player.y + player.height > s.y) {
+          restartGame();
+        }
+      }
+
+      // Holes
+      for (let h of holes) {
+        if (player.x + player.width > h.x && player.x < h.x + h.width) {
+          if (player.y + player.height >= canvas.height - groundHeight) {
+            restartGame();
+          }
+        }
+      }
+
+      // Goal
+      if (player.x + player.width > goal.x &&
+          player.x < goal.x + goal.width &&
+          player.y + player.height > goal.y) {
+        alert("🎉 You Win! 🎉");
+        restartGame();
+      }
+
+      // Camera follow
+      cameraX = player.x - canvas.width / 2;
+      if (cameraX < 0) cameraX = 0;
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGround();
+      drawHoles();
+      drawSpikes();
+      drawGoal();
+      drawPlayer();
+      updatePlayer();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      document.getElementById("menu").style.display = "none";
+      canvas.style.display = "block";
+      document.getElementById("controls").style.display = "flex";
+      gameRunning = true;
+      gameLoop();
+    }
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adventure Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #87CEEB;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      display: none;
+      background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+    }
+    #menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
+    }
+    button {
+      margin: 10px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+    #controls {
+      display: none;
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      cursor: pointer;
+    }
+    #instructions {
+      max-width: 600px;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Menu -->
+  <div id="menu">
+    <h1>🌟 Adventure Game 🌟</h1>
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="window.open('https://chatgpt.com/share/68d22f1a-44cc-8012-b812-1b2102a20a2e','_blank')">AI Chat History</button>
+    <div id="instructions">
+      <h3>📜 How to Play</h3>
+      <ul>
+        <li>➡ Move Right: Right Arrow / Tap ➡</li>
+        <li>⬅ Move Left: Left Arrow / Tap ⬅</li>
+        <li>⤒ Jump: Up Arrow / Space / Tap ⤒</li>
+        <li>⟳ Restart: R / Tap ⟳</li>
+        <li>Avoid spikes ⚠ and jump over holes ⬜</li>
+        <li>Reach the end to win 🎉</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Mobile Controls -->
+  <div id="controls">
+    <div class="btn" id="left">⬅</div>
+    <div class="btn" id="jump">⤒</div>
+    <div class="btn" id="right">➡</div>
+    <div class="btn" id="restart">⟳</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let gameRunning = false;
+
+    // Player
+    const player = {
+      x: 50,
+      y: canvas.height - 140,
+      width: 40,
+      height: 40,
+      color: "red",
+      dy: 0,
+      gravity: 0.6,
+      jumpPower: -12,
+      grounded: false,
+      speed: 5
+    };
+
+    // Ground
+    const groundHeight = 100;
+    const ground = [{ x: 0, y: canvas.height - groundHeight, width: 3000, height: groundHeight }];
+
+    // Obstacles
+    const spikes = [
+      { x: 400, y: canvas.height - groundHeight - 20, width: 40, height: 20 },
+      { x: 900, y: canvas.height - groundHeight - 20, width: 40, height: 20 },
+      { x: 1600, y: canvas.height - groundHeight - 20, width: 40, height: 20 }
+    ];
+
+    const holes = [
+      { x: 700, width: 100 },
+      { x: 1300, width: 120 },
+      { x: 2000, width: 150 }
+    ];
+
+    // Goal (win zone)
+    const goal = { x: 2800, y: canvas.height - groundHeight - 50, width: 40, height: 50 };
+
+    let cameraX = 0;
+    let keys = {};
+
+    // Restart
+    function restartGame() {
+      player.x = 50;
+      player.y = canvas.height - 140;
+      player.dy = 0;
+      cameraX = 0;
+    }
+
+    // PC controls
+    window.addEventListener("keydown", e => keys[e.key] = true);
+    window.addEventListener("keyup", e => keys[e.key] = false);
+
+    // Mobile controls
+    document.getElementById("left").addEventListener("touchstart", () => keys["ArrowLeft"] = true);
+    document.getElementById("left").addEventListener("touchend", () => keys["ArrowLeft"] = false);
+    document.getElementById("right").addEventListener("touchstart", () => keys["ArrowRight"] = true);
+    document.getElementById("right").addEventListener("touchend", () => keys["ArrowRight"] = false);
+    document.getElementById("jump").addEventListener("touchstart", () => {
+      if (player.grounded) {
+        player.dy = player.jumpPower;
+        player.grounded = false;
+      }
+    });
+    document.getElementById("restart").addEventListener("touchstart", restartGame);
+
+    // Drawing
+    function drawPlayer() {
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
+    }
+
+    function drawGround() {
+      ctx.fillStyle = "green";
+      ground.forEach(g => ctx.fillRect(g.x - cameraX, g.y, g.width, g.height));
+    }
+
+    function drawSpikes() {
+      ctx.fillStyle = "black";
+      spikes.forEach(s => {
+        ctx.beginPath();
+        ctx.moveTo(s.x - cameraX, s.y + s.height);
+        ctx.lineTo(s.x + s.width/2 - cameraX, s.y);
+        ctx.lineTo(s.x + s.width - cameraX, s.y + s.height);
+        ctx.closePath();
+        ctx.fill();
+      });
+    }
+
+    function drawHoles() {
+      ctx.fillStyle = "#87CEEB";
+      holes.forEach(h => ctx.fillRect(h.x - cameraX, canvas.height - groundHeight, h.width, groundHeight));
+    }
+
+    function drawGoal() {
+      ctx.fillStyle = "gold";
+      ctx.fillRect(goal.x - cameraX, goal.y, goal.width, goal.height);
+    }
+
+    function updatePlayer() {
+      if (keys["ArrowLeft"]) player.x -= player.speed;
+      if (keys["ArrowRight"]) player.x += player.speed;
+      if ((keys[" "] || keys["ArrowUp"]) && player.grounded) {
+        player.dy = player.jumpPower;
+        player.grounded = false;
+      }
+
+      player.dy += player.gravity;
+      player.y += player.dy;
+
+      // Ground + holes
+      player.grounded = false;
+      let onGround = true;
+      for (let h of holes) {
+        if (player.x + player.width > h.x && player.x < h.x + h.width) {
+          onGround = false;
+        }
+      }
+      if (onGround && player.y + player.height > canvas.height - groundHeight) {
+        player.y = canvas.height - groundHeight - player.height;
+        player.dy = 0;
+        player.grounded = true;
+      }
+
+      // Spikes
+      for (let s of spikes) {
+        if (player.x < s.x + s.width &&
+            player.x + player.width > s.x &&
+            player.y < s.y + s.height &&
+            player.y + player.height > s.y) {
+          restartGame();
+        }
+      }
+
+      // Holes
+      for (let h of holes) {
+        if (player.x + player.width > h.x && player.x < h.x + h.width) {
+          if (player.y + player.height >= canvas.height - groundHeight) {
+            restartGame();
+          }
+        }
+      }
+
+      // Goal
+      if (player.x + player.width > goal.x &&
+          player.x < goal.x + goal.width &&
+          player.y + player.height > goal.y) {
+        alert("🎉 You Win! 🎉");
+        restartGame();
+      }
+
+      // Camera follow
+      cameraX = player.x - canvas.width / 2;
+      if (cameraX < 0) cameraX = 0;
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGround();
+      drawHoles();
+      drawSpikes();
+      drawGoal();
+      drawPlayer();
+      updatePlayer();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      document.getElementById("menu").style.display = "none";
+      canvas.style.display = "block";
+      document.getElementById("controls").style.display = "flex";
+      gameRunning = true;
+      gameLoop();
+    }
+  </script>
+</body>
+</html>
