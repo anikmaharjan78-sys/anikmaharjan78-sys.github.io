@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Anik Maharjan | Portfolio</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- Font Awesome (icons) -->
+  <!-- Font Awesome (Icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- AOS (Animate on Scroll) -->
@@ -16,7 +16,6 @@
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 </head>
 <body>
-
   <!-- NAVBAR -->
   <nav>
     <div class="logo">Anik</div>
@@ -24,19 +23,14 @@
       <a href="index.html" class="active">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
-      <nav>
-  <div class="logo">Anik</div>
-    <a href="projects.html">Projects</a>
-  </div>
-      </nav>
+      <a href="projects.html">Projects</a>
     </div>
   </nav>
 
   <!-- HERO SECTION -->
   <section class="hero" data-aos="fade-up">
     <img src="myprofile.jpg" alt="Anik Maharjan" class="profile-pic" data-aos="zoom-in">
-
-    <h1>Hello 👋, I’m <span style="color:#ffcc00;">Anik Maharjan</span></h1>
+    <p>Hello 👋, I'm <span style="color:#ffcc00;">Anik Maharjan</span></p>
     <p><span id="typed-text"></span></p>
 
     <!-- Social Links -->
@@ -52,7 +46,7 @@
     </div>
   </section>
 
-  <!-- AOS + Typed.js Init -->
+  <!-- AOS & Typed.js Init -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>
     AOS.init({
@@ -60,13 +54,12 @@
       once: true
     });
 
-    // Typed.js
     var typed = new Typed("#typed-text", {
       strings: [
         "<span style='color:#ffcc00;'>Student at Dong-A University 🎓</span>",
-        "<span style='color:#00e6e6;'>Dreamer of Global Business 🚀</span>",
-        "<span style='color:#ff66b2;'>Music & Guitar Lover 🎸</span>",
-        "<span style='color:#99ff33;'>Always Learning 📚</span>"
+        "<span style='color:#00c6e6;'>Dreamer of Global Business 🌍</span>",
+        "<span style='color:#ff6b62;'>Music & Guitar Lover 🎸</span>",
+        "<span style='color:#f99f33;'>Always Learning 🚀</span>"
       ],
       typeSpeed: 60,
       backSpeed: 40,
