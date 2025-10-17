@@ -225,191 +225,19 @@ form button:hover {
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
-}/* === GLOBAL STYLES === */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  color: #fff;
-  min-height: 100vh;
-  line-height: 1.6;
-
-  /* Animated gradient background */
-  background: linear-gradient(-45deg, #6a11cb, #2575fc, #ff66b2, #00e6e6);
-  background-size: 400% 400%;
-  animation: gradientShift 12s ease infinite;
-}
-
-/* Gradient Animation */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* === NAVBAR === */
-nav {
+/* === NEW PROJECT BUTTONS SECTION START === */
+.project-buttons-container {
+  margin-top: 30px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 10%;
-  background: rgba(0,0,0,0.2);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap; /* Allows buttons to stack on small screens */
+  padding: 0 10px;
 }
 
-nav a {
-  color: #fff;
-  text-decoration: none;
-  margin: 0 15px;
-  font-weight: 600;
-  transition: color 0.3s;
-}
-
-nav a:hover { color: #ffcc00; }
-nav .active { color: #ffcc00; }
-
-/* === HERO SECTION === */
-.hero {
-  text-align: center;
-  padding: 100px 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: -1;
-}
-
-.profile-pic {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  margin-bottom: 20px;
-  animation: fadeInDown 1s ease;
-}
-
-.hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  animation: fadeIn 1.2s ease forwards;
-}
-
-/* === TYPED TEXT === */
-#typed-text {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #ffcc00;
-  text-shadow: 0 0 10px rgba(255, 204, 0, 0.7),
-               0 0 20px rgba(255, 204, 0, 0.5);
-  border-right: 2px solid #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  display: inline-block;
-  animation: blink 0.8s infinite;
-}
-
-@keyframes blink {
-  0%, 50% { border-color: #fff; }
-  51%, 100% { border-color: transparent; }
-}
-
-/* === SCROLL DOWN ARROW === */
-.scroll-down {
-  margin-top: 40px;
-  font-size: 24px;
-  animation: bounce 1.5s infinite;
-  cursor: pointer;
-}
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(10px); }
-  60% { transform: translateY(5px); }
-}
-
-/* === ABOUT SECTION === */
-.about {
-  padding: 80px 10%;
-  text-align: center;
-}
-
-.about h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.about p {
-  max-width: 700px;
-  margin: 0 auto 15px;
-  font-size: 1rem;
-}
-
-/* === CONTACT SECTION === */
-.contact {
-  padding: 80px 10%;
-  text-align: center;
-}
-
-.contact h2 {
-  font-size: 2rem;
-  margin-bottom: 15px;
-}
-
-.contact-info {
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 12px;
-  display: inline-block;
-  margin-bottom: 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.contact-info p {
-  margin: 8px 0;
-  font-size: 1rem;
-}
-
-form {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-form input,
-form textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-  background: #fff;
-  color: #333;
-  font-size: 16px;
-  transition: box-shadow 0.3s;
-}
-
-form input:focus,
-form textarea:focus {
-  box-shadow: 0 0 10px #2575fc;
-}
-
-form button {
+.project-button {
   display: inline-block;
   background: #ffcc00;
   color: #333;
@@ -419,37 +247,11 @@ form button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  text-decoration: none; /* Removes underline from the links */
 }
 
-form button:hover {
+.project-button:hover {
   background: #ffdb4d;
   transform: scale(1.05);
 }
-
-/* === SOCIAL ICONS === */
-.social-links {
-  margin-top: 20px;
-}
-
-.social-links a {
-  color: white;
-  margin: 0 10px;
-  font-size: 22px;
-  transition: transform 0.3s, color 0.3s;
-}
-
-.social-links a:hover {
-  color: #ffcc00;
-  transform: scale(1.2);
-}
-
-/* === ANIMATIONS === */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* === NEW PROJECT BUTTONS SECTION END === */
