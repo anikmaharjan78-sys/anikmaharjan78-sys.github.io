@@ -229,29 +229,34 @@ form button:hover {
 
 /* === NEW PROJECT BUTTONS SECTION START === */
 .project-buttons-container {
-  margin-top: 30px;
+  margin-top: 30px; /* Space between social links and new buttons */
   display: flex;
   justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap; /* Allows buttons to stack on small screens */
-  padding: 0 10px;
+  gap: 15px; /* Space between buttons */
+  flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+  padding: 0 10px; /* Horizontal padding for small screens */
 }
 
 .project-button {
   display: inline-block;
   background: #ffcc00;
-  color: #333;
+  color: #333; /* Dark text color for contrast */
   padding: 12px 25px;
   border: none;
-  border-radius: 30px;
+  border-radius: 30px; /* Pill shape */
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  text-decoration: none; /* Removes underline from the links */
+  transition: all 0.3s ease; /* Smooth hover effects */
+  text-decoration: none; /* Remove underline from links */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  font-size: 1rem; /* Adjust font size if needed */
+  text-align: center;
+  white-space: nowrap; /* Prevent text from wrapping inside button */
 }
 
 .project-button:hover {
-  background: #ffdb4d;
-  transform: scale(1.05);
+  background: #ffdb4d; /* Lighter yellow on hover */
+  transform: scale(1.05); /* Slight enlargement on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow on hover */
 }
 /* === NEW PROJECT BUTTONS SECTION END === */
