@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD Clues | Advanced Data Detective</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Papa Parse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Date Adapter for Chart.js (if needed, but we'll aggregate manually for safety) -->
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: { 50:'#eef2ff', 100:'#e0e7ff', 500:'#6366f1', 600:'#4f46e5', 900:'#312e81' },
+                        slate: { 850: '#1e293b' } // Custom dark
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; font-weight: 600; }
+        .tab-inactive { color: #64748b; }
+        .tab-inactive:hover { color: #334155; }
+        
+        /* Table Sticky Header */
+        .table-container { max-height: 70vh; overflow-y: auto; }
+        thead th { position: sticky; top: 0; z-index: 10; background: #f8fafc; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-slate-900">DD Clues Tool</h1>
+                <p class="text-xs text-slate-500">Requirements 1-11 Compliant</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <label class="btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-upload"></i> Upload CSV
+                <input type="file" id="csvInput" accept=".csv" class="hidden">
+            </label>
+            <button onclick="window.location.reload()" class="text-slate-500 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition">
+                Reset
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Workspace (Hidden until upload) -->
+    <div id="landingPage" class="flex-grow flex flex-col items-center justify-center p-10 text-center animate-fade-in">
+        <div class="bg-white p-12 rounded-2xl shadow-xl border border-gray-100 max-w-lg w-full">
+            <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <i class="fa-solid fa-file-csv"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Start Your Investigation</h2>
+            <p class="text-slate-500 mb-8">Upload a dataset to begin analysis. Supports Pivot Tables, Anomalies, and Trends.</p>
+            <label class="block w-full cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition transform hover:scale-105">
+                Select CSV File
+                <input type="file" onchange="handleFile(this.files)" accept=".csv" class="hidden">
+            </label>
+            <p class="text-xs text-slate-400 mt-4">Processed locally in your browser.</p>
+        </div>
+    </div>
+
+    <div id="workspace" class="hidden flex-grow flex flex-col overflow-hidden">
+        
+        <!-- Tabs -->
+        <div class="bg-white border-b border-gray-200 px-6 flex gap-6 text-sm font-medium shrink-0">
+            <button onclick="switchTab('data')" id="tab-data" class="tab-active py-4 flex items-center gap-2"><i class="fa-solid fa-table"></i> Data & Stats</button>
+            <button onclick="switchTab('analysis')" id="tab-analysis" class="tab-inactive py-4 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Group & Pivot</button>
+            <button onclick="switchTab('anomalies')" id="tab-anomalies" class="tab-inactive py-4 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Anomalies</button>
+            <button onclick="switchTab('visuals')" id="tab-visuals" class="tab-inactive py-4 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Time & Charts</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-grow overflow-auto bg-gray-50 p-6 relative">
+
+            <!-- TAB 1: DATA & STATS -->
+            <div id="view-data" class="space-y-6">
+                <!-- Top Stats Cards (Categorical & Numerical) -->
+                <div id="descriptiveStats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Injected by JS -->
+                </div>
+
+                <!-- Filter & Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[600px]">
+                    <div class="p-4 border-b border-gray-200 flex flex-wrap gap-3 items-center justify-between bg-gray-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-slate-700">Filter:</span>
+                            <select id="filterCol" class="text-sm border-gray-300 rounded-md shadow-sm p-1.5 outline-none focus:border-indigo-500"></select>
+                            <select id="filterCond" class="text-sm border-gray-300 rounded-md shadow-sm p-1.5 outline-none focus:border-indigo-500">
+                                <option value="contains">Contains</option>
+                                <option value="eq">Equals</option>
+                                <option value="gt">&gt;</option>
+                                <option value="lt">&lt;</option>
+                            </select>
+                            <input id="filterVal" type="text" placeholder="Value..." class="text-sm border-gray-300 rounded-md shadow-sm p-1.5 w-32 outline-none focus:border-indigo-500">
+                            <button onclick="applyFilter()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-indigo-700">Go</button>
+                            <button onclick="clearFilter()" class="text-slate-500 hover:text-red-500 px-2"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="text-xs text-slate-500" id="rowCountDisplay"></div>
+                    </div>
+                    <div class="flex-grow overflow-auto table-container">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50 text-xs uppercase font-medium text-slate-500" id="mainThead"></thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="mainTbody"></tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-3 border-t border-gray-200 flex justify-between items-center bg-gray-50 rounded-b-xl">
+                        <button onclick="changePage(-1)" id="btnPrev" class="px-3 py-1 border rounded bg-white hover:bg-gray-50 disabled:opacity-50">Prev</button>
+                        <span id="pageInfo" class="text-sm text-slate-600">Page 1</span>
+                        <button onclick="changePage(1)" id="btnNext" class="px-3 py-1 border rounded bg-white hover:bg-gray-50 disabled:opacity-50">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ANALYSIS (Group By & Pivot) -->
+            <div id="view-analysis" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+                <!-- Group By Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-layer-group text-indigo-500"></i> Group By & Aggregate</h3>
+                        <p class="text-xs text-slate-500">Summarize data by categories (Req #7).</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-4 bg-gray-50 p-4 rounded-lg">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase">Group By</label>
+                            <select id="groupCol" class="w-full text-sm border-gray-300 rounded mt-1 p-2"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase">Calculate</label>
+                            <select id="aggOp" class="w-full text-sm border-gray-300 rounded mt-1 p-2 mb-2">
+                                <option value="count">Count Records</option>
+                                <option value="sum">Sum of</option>
+                                <option value="avg">Average of</option>
+                                <option value="min">Min of</option>
+                                <option value="max">Max of</option>
+                            </select>
+                            <select id="aggCol" class="w-full text-sm border-gray-300 rounded p-2 hidden"></select>
+                        </div>
+                    </div>
+                    <button onclick="runGroupBy()" class="w-full bg-indigo-600 text-white py-2 rounded-md font-medium hover:bg-indigo-700 mb-4 shadow-sm">Run Analysis</button>
+                    
+                    <div class="flex-grow overflow-auto border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50"><tr id="groupThead"></tr></thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="groupTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pivot Table Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-table-cells text-indigo-500"></i> Pivot Table</h3>
+                        <p class="text-xs text-slate-500">Cross-tabulate data (Req #8).</p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-4 bg-gray-50 p-4 rounded-lg">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500">Rows</label>
+                            <select id="pivotRow" class="w-full text-xs border-gray-300 rounded mt-1 p-1"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500">Columns</label>
+                            <select id="pivotCol" class="w-full text-xs border-gray-300 rounded mt-1 p-1"></select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500">Values (Sum)</label>
+                            <select id="pivotVal" class="w-full text-xs border-gray-300 rounded mt-1 p-1"></select>
+                        </div>
+                    </div>
+                    <button onclick="runPivot()" class="w-full bg-indigo-600 text-white py-2 rounded-md font-medium hover:bg-indigo-700 mb-4 shadow-sm">Generate Pivot</button>
+                    
+                    <div class="flex-grow overflow-auto border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200 text-xs">
+                            <thead class="bg-gray-50" id="pivotThead"></thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="pivotTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ANOMALIES -->
+            <div id="view-anomalies" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-red-600 flex items-center gap-2">
+                                <i class="fa-solid fa-bug"></i> Anomaly Detection
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">Identify outliers using Z-Score or IQR methods (Req #4).</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-red-50 p-2 rounded-lg border border-red-100">
+                            <select id="anomalyMethod" class="text-sm border-gray-300 rounded shadow-sm p-2 outline-none">
+                                <option value="zscore">Z-Score (SD > 2)</option>
+                                <option value="iqr">IQR (Boxplot)</option>
+                            </select>
+                            <button onclick="detectAnomalies()" class="bg-red-600 text-white px-4 py-2 rounded shadow-sm hover:bg-red-700 font-medium">Scan</button>
+                            <button onclick="exportAnomalies()" class="bg-white border border-red-300 text-red-700 px-4 py-2 rounded shadow-sm hover:bg-red-50 font-medium whitespace-nowrap">
+                                <i class="fa-solid fa-download"></i> Export Anomalies (Req #11)
+                            </button>
+                        </div>
+                    </div>
+                    <div id="anomalyStats" class="mb-4 text-sm font-bold text-slate-700 hidden">
+                        Found <span id="anomalyCount" class="text-red-600">0</span> potential anomalies.
+                    </div>
+                    <div class="overflow-auto border rounded-lg max-h-[500px]">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-red-50" id="anomalyThead"></thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="anomalyTbody">
+                                <tr><td class="p-8 text-center text-slate-400">Run a scan to see outliers.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: VISUALS (Time & Charts) -->
+            <div id="view-visuals" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Time Series Analysis -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-regular fa-calendar-check text-indigo-500"></i> Date/Time Trends (Req #9)
+                            </h3>
+                            <p class="text-xs text-slate-500">Auto-detected date columns.</p>
+                        </div>
+                        <select id="timeCol" class="text-sm border-gray-300 rounded p-1"></select>
+                    </div>
+                    <div class="h-80 relative w-full">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- General Visuals -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">Distribution (Req #10)</h3>
+                        <div class="flex gap-2 mt-2">
+                            <select id="vizCol" class="w-full text-sm border-gray-300 rounded p-1"></select>
+                            <select id="vizType" class="w-1/3 text-sm border-gray-300 rounded p-1">
+                                <option value="bar">Bar</option>
+                                <option value="line">Line</option>
+                                <option value="pie">Pie</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="h-64 relative w-full flex-grow">
+                        <canvas id="distChart"></canvas>
+                    </div>
+                    <button onclick="updateDistChart()" class="w-full bg-indigo-100 text-indigo-700 py-2 rounded mt-4 font-medium hover:bg-indigo-200">Update Chart</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        // --- State ---
+        const App = {
+            data: [],
+            meta: {},
+            headers: [],
+            types: {}, // 'number', 'string', 'date'
+            filteredData: [],
+            anomalies: [],
+            charts: {},
+            page: 1,
+            rowsPerPage: 100
+        };
+
+        // --- Event Listeners ---
+        document.getElementById('csvInput').addEventListener('change', (e) => handleFile(e.target.files));
+        
+        // --- Tab Logic ---
+        function switchTab(tabId) {
+            ['data', 'analysis', 'anomalies', 'visuals'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${t}`);
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+
+            // Resize charts if becoming visible
+            if(tabId === 'visuals') {
+                if(App.charts.time) App.charts.time.resize();
+                if(App.charts.dist) App.charts.dist.resize();
+            }
+        }
+
+        // --- File Handling ---
+        function handleFile(files) {
+            if (!files.length) return;
+            const file = files[0];
+            
+            Papa.parse(file, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: (res) => {
+                    App.data = res.data;
+                    App.filteredData = [...App.data];
+                    App.headers = res.meta.fields;
+                    detectTypes();
+                    
+                    // UI Init
+                    document.getElementById('landingPage').classList.add('hidden');
+                    document.getElementById('workspace').classList.remove('hidden');
+                    
+                    initFilters();
+                    renderTable();
+                    renderStats();
+                    initAnalysisUI();
+                }
+            });
+        }
+
+        function detectTypes() {
+            // Heuristic detection for Number, Date, String
+            const sample = App.data.slice(0, 100);
+            App.headers.forEach(h => {
+                let numCount = 0;
+                let dateCount = 0;
+                let validCount = 0;
+
+                for (let row of sample) {
+                    const val = row[h];
+                    if (val === null || val === undefined || val === '') continue;
+                    validCount++;
+                    
+                    if (typeof val === 'number') numCount++;
+                    // Basic date check: parses as date and not a pure number
+                    const d = new Date(val);
+                    if (!isNaN(d.getTime()) && typeof val !== 'number') dateCount++;
+                }
+
+                if (validCount > 0 && (numCount / validCount) > 0.8) App.types[h] = 'number';
+                else if (validCount > 0 && (dateCount / validCount) > 0.8) App.types[h] = 'date';
+                else App.types[h] = 'string';
+            });
+        }
+
+        // --- Tab 1: Stats & Data ---
+        function renderStats() {
+            const container = document.getElementById('descriptiveStats');
+            container.innerHTML = '';
+
+            App.headers.forEach(h => {
+                const type = App.types[h];
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-200";
+
+                const vals = App.data.map(r => r[h]).filter(v => v !== null && v !== '');
+
+                if (type === 'number') {
+                    // Req #3: Descriptive Stats
+                    const sum = vals.reduce((a, b) => a + b, 0);
+                    const mean = sum / vals.length;
+                    const min = Math.min(...vals);
+                    const max = Math.max(...vals);
+                    card.innerHTML = `
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-1 truncate" title="${h}">${h}</h4>
+                        <div class="text-2xl font-bold text-indigo-600">${mean.toFixed(2)}</div>
+                        <div class="text-xs text-slate-400 mt-1">Avg</div>
+                        <div class="mt-3 text-xs grid grid-cols-2 gap-1 text-slate-500">
+                            <span>Min: ${min}</span> <span>Max: ${max}</span>
+                        </div>
+                    `;
+                } else {
+                    // Req #5: Categorical Unique Counts
+                    const counts = {};
+                    vals.forEach(v => counts[v] = (counts[v] || 0) + 1);
+                    const unique = Object.keys(counts).length;
+                    const top = Object.entries(counts).sort((a,b) => b[1] - a[1])[0];
+                    
+                    card.innerHTML = `
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-1 truncate" title="${h}">${h}</h4>
+                        <div class="text-2xl font-bold text-emerald-600">${unique}</div>
+                        <div class="text-xs text-slate-400 mt-1">Unique Values</div>
+                        <div class="mt-3 text-xs text-slate-500 truncate">
+                            Top: <b>${top ? top[0] : 'N/A'}</b> (${top ? top[1] : 0})
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function initFilters() {
+            const sel = document.getElementById('filterCol');
+            sel.innerHTML = '<option value="">Column...</option>';
+            App.headers.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h;
+                opt.innerText = h;
+                sel.appendChild(opt);
+            });
+        }
+
+        function applyFilter() {
+            const col = document.getElementById('filterCol').value;
+            const cond = document.getElementById('filterCond').value;
+            const val = document.getElementById('filterVal').value;
+            
+            if (!col) return;
+
+            App.filteredData = App.data.filter(row => {
+                const rVal = row[col];
+                if (rVal == null) return false;
+                
+                const isNum = App.types[col] === 'number';
+                const cVal = isNum ? parseFloat(val) : val.toLowerCase();
+                const dVal = isNum ? rVal : String(rVal).toLowerCase();
+
+                if (cond === 'contains') return String(dVal).includes(cVal);
+                if (cond === 'eq') return dVal == cVal;
+                if (cond === 'gt') return dVal > cVal;
+                if (cond === 'lt') return dVal < cVal;
+                return true;
+            });
+            
+            App.page = 1;
+            renderTable();
+        }
+
+        function clearFilter() {
+            App.filteredData = [...App.data];
+            document.getElementById('filterVal').value = '';
+            renderTable();
+        }
+
+        function renderTable() {
+            // Headers
+            const thead = document.getElementById('mainThead');
+            thead.innerHTML = `<tr>${App.headers.map(h => `<th class="px-4 py-3 text-left whitespace-nowrap bg-gray-50 border-b">${h}</th>`).join('')}</tr>`;
+
+            // Body
+            const tbody = document.getElementById('mainTbody');
+            tbody.innerHTML = '';
+            
+            const start = (App.page - 1) * App.rowsPerPage;
+            const end = start + App.rowsPerPage;
+            const pageData = App.filteredData.slice(start, end);
+
+            pageData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = App.headers.map(h => `<td class="px-4 py-2 whitespace-nowrap border-b text-slate-600">${row[h] !== null ? row[h] : ''}</td>`).join('');
+                tbody.appendChild(tr);
+            });
+
+            // Pagination UI
+            document.getElementById('rowCountDisplay').innerText = `${App.filteredData.length} Rows`;
+            document.getElementById('pageInfo').innerText = `Page ${App.page} of ${Math.ceil(App.filteredData.length / App.rowsPerPage) || 1}`;
+            document.getElementById('btnPrev').disabled = App.page === 1;
+            document.getElementById('btnNext').disabled = end >= App.filteredData.length;
+        }
+
+        function changePage(delta) {
+            App.page += delta;
+            renderTable();
+        }
+
+        // --- Tab 2: Analysis (Group By & Pivot) ---
+        function initAnalysisUI() {
+            // Group By Selects
+            const grpSel = document.getElementById('groupCol');
+            const aggColSel = document.getElementById('aggCol');
+            const pivotRow = document.getElementById('pivotRow');
+            const pivotCol = document.getElementById('pivotCol');
+            const pivotVal = document.getElementById('pivotVal');
+            
+            // Populate Dropdowns
+            const allOpts = App.headers.map(h => `<option value="${h}">${h}</option>`).join('');
+            const numOpts = App.headers.filter(h => App.types[h] === 'number').map(h => `<option value="${h}">${h}</option>`).join('');
+            
+            grpSel.innerHTML = allOpts;
+            aggColSel.innerHTML = numOpts;
+            pivotRow.innerHTML = allOpts;
+            pivotCol.innerHTML = `<option value="">(None)</option>` + allOpts;
+            pivotVal.innerHTML = numOpts;
+
+            // Viz Selects
+            document.getElementById('vizCol').innerHTML = numOpts;
+            
+            // Time Selects
+            const dateCols = App.headers.filter(h => App.types[h] === 'date');
+            const timeSel = document.getElementById('timeCol');
+            if(dateCols.length > 0) {
+                timeSel.innerHTML = dateCols.map(h => `<option value="${h}">${h}</option>`).join('');
+                generateTimeChart(dateCols[0]);
+            } else {
+                timeSel.innerHTML = '<option>No Date Cols</option>';
+            }
+
+            // Show/Hide Agg Col based on op
+            document.getElementById('aggOp').addEventListener('change', (e) => {
+                document.getElementById('aggCol').classList.toggle('hidden', e.target.value === 'count');
+            });
+
+            updateDistChart(); // Init chart
+        }
+
+        // Req #7: Group By
+        function runGroupBy() {
+            const grpCol = document.getElementById('groupCol').value;
+            const op = document.getElementById('aggOp').value;
+            const valCol = document.getElementById('aggCol').value;
+
+            const groups = {};
+            App.filteredData.forEach(row => {
+                const key = row[grpCol] || 'Unknown';
+                if(!groups[key]) groups[key] = [];
+                groups[key].push(row[valCol]); // Push val for sum/avg, or just row for count
+            });
+
+            // Aggregate
+            const results = Object.keys(groups).map(key => {
+                const vals = groups[key];
+                let resVal = 0;
+                if(op === 'count') resVal = vals.length;
+                else if(op === 'sum') resVal = vals.reduce((a,b)=>a+(b||0),0);
+                else if(op === 'avg') resVal = vals.reduce((a,b)=>a+(b||0),0) / vals.length;
+                else if(op === 'max') resVal = Math.max(...vals);
+                else if(op === 'min') resVal = Math.min(...vals);
+                
+                return { [grpCol]: key, Value: resVal };
+            }).sort((a,b) => b.Value - a.Value);
+
+            // Render Small Table
+            document.getElementById('groupThead').innerHTML = `<th class="px-4 py-2 border-b bg-gray-50 text-left">${grpCol}</th><th class="px-4 py-2 border-b bg-gray-50 text-left capitalize">${op} ${valCol || ''}</th>`;
+            document.getElementById('groupTbody').innerHTML = results.map(r => `<tr><td class="px-4 py-2 border-b">${r[grpCol]}</td><td class="px-4 py-2 border-b font-mono">${r.Value.toLocaleString(undefined, {maximumFractionDigits:2})}</td></tr>`).join('');
+        }
+
+        // Req #8: Pivot Tables
+        function runPivot() {
+            const rCol = document.getElementById('pivotRow').value;
+            const cCol = document.getElementById('pivotCol').value;
+            const vCol = document.getElementById('pivotVal').value;
+
+            if(!rCol || !vCol) return;
+
+            // 1. Get Unique Rows and Cols
+            const rowLabels = [...new Set(App.filteredData.map(r => r[rCol]))].sort();
+            const colLabels = cCol ? [...new Set(App.filteredData.map(r => r[cCol]))].sort() : ['Total'];
+
+            // 2. Build Matrix
+            const matrix = {};
+            rowLabels.forEach(r => {
+                matrix[r] = {};
+                colLabels.forEach(c => matrix[r][c] = 0);
+            });
+
+            // 3. Fill Matrix (Sum)
+            App.filteredData.forEach(row => {
+                const rKey = row[rCol];
+                const cKey = cCol ? row[cCol] : 'Total';
+                const val = parseFloat(row[vCol]) || 0;
+                if(matrix[rKey] && matrix[rKey][cKey] !== undefined) {
+                    matrix[rKey][cKey] += val;
+                }
+            });
+
+            // 4. Render
+            const thead = document.getElementById('pivotThead');
+            thead.innerHTML = `<tr><th class="px-2 py-1 bg-gray-100 border text-left">${rCol} \\ ${cCol || 'Val'}</th>${colLabels.map(c => `<th class="px-2 py-1 bg-gray-100 border text-right">${c}</th>`).join('')}</tr>`;
+            
+            const tbody = document.getElementById('pivotTbody');
+            tbody.innerHTML = rowLabels.map(r => {
+                const cells = colLabels.map(c => `<td class="px-2 py-1 border text-right font-mono">${matrix[r][c].toLocaleString()}</td>`).join('');
+                return `<tr><td class="px-2 py-1 border font-bold bg-gray-50">${r}</td>${cells}</tr>`;
+            }).join('');
+        }
+
+        // --- Tab 3: Anomalies (Req #4) ---
+        function detectAnomalies() {
+            const method = document.getElementById('anomalyMethod').value;
+            App.anomalies = [];
+            
+            // Only numeric cols
+            const numCols = App.headers.filter(h => App.types[h] === 'number');
+
+            // Pre-calc stats per col
+            const colStats = {};
+            numCols.forEach(col => {
+                const vals = App.data.map(r => r[col]).filter(v => typeof v === 'number').sort((a,b)=>a-b);
+                const sum = vals.reduce((a,b)=>a+b,0);
+                const mean = sum / vals.length;
+                const sd = Math.sqrt(vals.reduce((a,b)=>a+Math.pow(b-mean,2),0)/vals.length);
+                const q1 = vals[Math.floor(vals.length * 0.25)];
+                const q3 = vals[Math.floor(vals.length * 0.75)];
+                const iqr = q3 - q1;
+                colStats[col] = { mean, sd, q1, q3, iqr };
+            });
+
+            // Scan rows
+            App.data.forEach((row, idx) => {
+                let isAnomaly = false;
+                let reason = "";
+
+                numCols.forEach(col => {
+                    const val = row[col];
+                    if(typeof val !== 'number') return;
+                    const s = colStats[col];
+
+                    if(method === 'zscore') {
+                        if(s.sd > 0 && Math.abs((val - s.mean)/s.sd) > 2.5) { // 2.5 SD threshold
+                            isAnomaly = true;
+                            reason += `${col}: ${val} (Z > 2.5); `;
+                        }
+                    } else { // IQR
+                        const low = s.q1 - 1.5*s.iqr;
+                        const high = s.q3 + 1.5*s.iqr;
+                        if(val < low || val > high) {
+                            isAnomaly = true;
+                            reason += `${col}: ${val} (Outlier); `;
+                        }
+                    }
+                });
+
+                if(isAnomaly) {
+                    App.anomalies.push({ ...row, _Reason: reason });
+                }
+            });
+
+            // Render
+            document.getElementById('anomalyStats').classList.remove('hidden');
+            document.getElementById('anomalyCount').innerText = App.anomalies.length;
+
+            const thead = document.getElementById('anomalyThead');
+            thead.innerHTML = `<tr><th class="px-4 py-2 text-left bg-red-50 text-red-800 border-b">Reason</th>${App.headers.map(h => `<th class="px-4 py-2 text-left bg-red-50 border-b">${h}</th>`).join('')}</tr>`;
+
+            const tbody = document.getElementById('anomalyTbody');
+            tbody.innerHTML = App.anomalies.slice(0, 100).map(row => {
+                return `<tr class="bg-red-50/30 hover:bg-red-50"><td class="px-4 py-2 text-xs font-bold text-red-600 border-b">${row._Reason}</td>${App.headers.map(h => `<td class="px-4 py-2 border-b text-xs">${row[h]}</td>`).join('')}</tr>`;
+            }).join('');
+        }
+
+        // Req #11: Export Anomalies
+        function exportAnomalies() {
+            if(App.anomalies.length === 0) { alert("No anomalies detected yet."); return; }
+            const csv = Papa.unparse(App.anomalies);
+            const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'anomalies.csv';
+            link.click();
+        }
+
+        // --- Tab 4: Visuals (Req #9, #10) ---
+        function generateTimeChart(dateCol) {
+            // Aggregate by Month
+            const timeSeries = {};
+            App.data.forEach(row => {
+                const d = new Date(row[dateCol]);
+                if(isNaN(d)) return;
+                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
+                timeSeries[key] = (timeSeries[key] || 0) + 1;
+            });
+
+            const labels = Object.keys(timeSeries).sort();
+            const data = labels.map(k => timeSeries[k]);
+
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            if(App.charts.time) App.charts.time.destroy();
+
+            App.charts.time = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Records over Time',
+                        data: data,
+                        borderColor: '#4f46e5',
+                        tension: 0.1,
+                        fill: true,
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function updateDistChart() {
+            const col = document.getElementById('vizCol').value;
+            const type = document.getElementById('vizType').value;
+            if(!col) return;
+
+            // Get top 20 values or bins
+            const vals = App.data.map(r => r[col]).filter(v => v !== null).slice(0, 100); // Limit for perf
+            // Simple indexing for line/bar
+            const labels = vals.map((_, i) => i);
+            const data = vals;
+
+            const ctx = document.getElementById('distChart').getContext('2d');
+            if(App.charts.dist) App.charts.dist.destroy();
+
+            App.charts.dist = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: col,
+                        data: data,
+                        backgroundColor: type === 'pie' ? ['#6366f1', '#10b981', '#f59e0b'] : '#6366f1'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+    </script>
+</body>
+</html>
